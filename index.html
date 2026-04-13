@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Build Receipt — Kode with Vibes</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #1A47CC;
+      --blue-light: #EBF0FF;
+      --blue-dark:  #0f2e8a;
+      --blue-mid:   #2D5BE3;
+      --navy:       #0a0f2e;
+      --white:      #ffffff;
+      --bg:         #f4f6ff;
+      --border:     #dce3f8;
+      --border-mid: #b8c3e8;
+      --muted:      #6b7aaa;
+      --dark:       #2d3a6b;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem 4rem;
+      color: var(--navy);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tape {
+      width: 80px;
+      height: 22px;
+      background: rgba(26,71,204,0.2);
+      border-radius: 3px;
+      margin: 0 auto -6px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .receipt {
+      background: var(--white);
+      border-radius: 2px;
+      box-shadow: 0 4px 48px rgba(26,71,204,0.12), 0 1px 4px rgba(26,71,204,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .receipt::after {
+      content: '';
+      display: block;
+      height: 14px;
+      background: var(--bg);
+      mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14'%3E%3Cpath d='M0 14 Q5 0 10 14 Q15 0 20 14 Q25 0 30 14 Q35 0 40 14 Z' fill='white'/%3E%3C/svg%3E");
+      mask-size: 40px 14px;
+      mask-repeat: repeat-x;
+      -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14'%3E%3Cpath d='M0 14 Q5 0 10 14 Q15 0 20 14 Q25 0 30 14 Q35 0 40 14 Z' fill='white'/%3E%3C/svg%3E");
+      -webkit-mask-size: 40px 14px;
+      -webkit-mask-repeat: repeat-x;
+    }
+
+    /* Header */
+    .receipt-header {
+      background: var(--blue);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .brand-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .receipt-title {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .receipt-sub {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.1em;
+    }
+
+    /* Dashed divider */
+    .dashes {
+      border: none;
+      border-top: 2px dashed var(--border);
+      margin: 0 2rem;
+    }
+
+    /* Meta row */
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 2rem;
+      background: var(--bg);
+    }
+
+    .meta-item { display: flex; flex-direction: column; gap: 2px; }
+
+    .meta-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--dark);
+    }
+
+    /* Form body */
+    .form-body {
+      padding: 1.5rem 2rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .line-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .line-item:nth-child(1) { animation-delay: 0.05s; }
+    .line-item:nth-child(2) { animation-delay: 0.10s; }
+    .line-item:nth-child(3) { animation-delay: 0.15s; }
+    .line-item:nth-child(4) { animation-delay: 0.20s; }
+    .line-item:nth-child(5) { animation-delay: 0.25s; }
+    .line-item:nth-child(6) { animation-delay: 0.30s; }
+    .line-item:nth-child(7) { animation-delay: 0.35s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .line-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* Rating buttons */
+    .rating-group { display: flex; gap: 6px; }
+
+    .rating-btn {
+      flex: 1;
+      padding: 10px 4px;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .rating-btn:hover { border-color: var(--blue); color: var(--blue-dark); }
+    .rating-btn.active {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      color: var(--blue-dark);
+      font-weight: 600;
+    }
+
+    /* Radio pills */
+    .radio-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .radio-btn {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .radio-btn:hover { border-color: var(--blue); color: var(--blue-dark); }
+    .radio-btn.active {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      color: var(--blue-dark);
+      font-weight: 500;
+    }
+
+    /* Textarea & input */
+    .field {
+      width: 100%;
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--navy);
+      resize: vertical;
+      min-height: 76px;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .field::placeholder { color: var(--border-mid); }
+    .field:focus { border-color: var(--blue); background: var(--white); }
+
+    .input-field {
+      width: 100%;
+      font-family: var(--sans);
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--navy);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .input-field::placeholder { color: var(--border-mid); }
+    .input-field:focus { border-color: var(--blue); background: var(--white); }
+
+    /* Submit */
+    .submit-wrap { padding: 1rem 2rem 1.5rem; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--blue);
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      text-transform: uppercase;
+    }
+
+    .submit-btn:hover { background: var(--blue-mid); }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .error-msg {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: #c0392b;
+      margin-top: 8px;
+      text-align: center;
+      display: none;
+    }
+
+    /* Footer */
+    .receipt-footer {
+      padding: 0.75rem 2rem 1.25rem;
+      text-align: center;
+      border-top: 2px dashed var(--border);
+    }
+
+    .footer-text {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--border-mid);
+      text-transform: uppercase;
+    }
+
+    /* Success state */
+    .success-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 2rem;
+      text-align: center;
+      gap: 1rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .success-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--blue);
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .success-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .success-msg {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 340px;
+    }
+
+    .barcode {
+      margin-top: 0.5rem;
+      font-family: var(--mono);
+      font-size: 28px;
+      letter-spacing: 0.05em;
+      color: var(--border);
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="tape"></div>
+
+  <div class="receipt">
+
+    <!-- Header -->
+    <div class="receipt-header">
+      <div class="brand-tag">Kodee &bull; Post-Workshop</div>
+      <h1 class="receipt-title">Your build receipt</h1>
+      <div class="receipt-sub">14 April 2026 &nbsp;&bull;&nbsp; Kode with Vibes</div>
+    </div>
+
+    <div class="meta-row">
+      <div class="meta-item">
+        <span class="meta-label">Event</span>
+        <span class="meta-value">Kode with Vibes #01</span>
+      </div>
+      <div class="meta-item" style="text-align:right;">
+        <span class="meta-label">Date</span>
+        <span class="meta-value">14 Apr 2026</span>
+      </div>
+    </div>
+
+    <hr class="dashes" />
+
+    <!-- Form -->
+    <form id="feedback-form" onsubmit="handleSubmit(event)">
+
+      <div class="form-body" id="form-body">
+
+        <div class="line-item">
+          <label class="line-label" for="name">00 — Your name</label>
+          <input class="input-field" type="text" id="name" name="name" placeholder="What should we call you?" required />
+        </div>
+
+        <div class="line-item">
+          <div class="line-label">01 — Overall experience</div>
+          <div class="rating-group" id="rating">
+            <div class="rating-btn" data-v="1">1</div>
+            <div class="rating-btn" data-v="2">2</div>
+            <div class="rating-btn" data-v="3">3</div>
+            <div class="rating-btn" data-v="4">4</div>
+            <div class="rating-btn" data-v="5">5</div>
+          </div>
+          <input type="hidden" id="rating-val" name="overall_rating" />
+        </div>
+
+        <div class="line-item">
+          <div class="line-label">02 — Did you ship?</div>
+          <div class="radio-group" id="shipped">
+            <div class="radio-btn" data-v="Yes, shipped!">Yes, shipped!</div>
+            <div class="radio-btn" data-v="Almost there">Almost there</div>
+            <div class="radio-btn" data-v="Still loading...">Still loading...</div>
+          </div>
+          <input type="hidden" id="shipped-val" name="did_you_ship" />
+        </div>
+
+        <div class="line-item">
+          <label class="line-label" for="built">03 — What did you build?</label>
+          <textarea class="field" id="built" name="what_you_built" placeholder="Describe your tool in a sentence..." required></textarea>
+        </div>
+
+        <div class="line-item">
+          <label class="line-label" for="surprised">04 — What surprised you most?</label>
+          <textarea class="field" id="surprised" name="biggest_surprise" placeholder="The thing you didn't expect..."></textarea>
+        </div>
+
+        <div class="line-item">
+          <div class="line-label">05 — Would you recommend this?</div>
+          <div class="radio-group" id="recommend">
+            <div class="radio-btn" data-v="Yes">Yes</div>
+            <div class="radio-btn" data-v="Hell yes">Hell yes</div>
+            <div class="radio-btn" data-v="Maybe">Maybe</div>
+            <div class="radio-btn" data-v="Not yet">Not yet</div>
+          </div>
+          <input type="hidden" id="recommend-val" name="would_recommend" />
+        </div>
+
+        <div class="line-item">
+          <label class="line-label" for="thoughts">06 — Any last thoughts for Sam?</label>
+          <textarea class="field" id="thoughts" name="last_thoughts" placeholder="Anything else on your mind..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="submit-wrap">
+        <button class="submit-btn" type="submit" id="submit-btn">Submit receipt →</button>
+        <div class="error-msg" id="error-msg">Something went wrong. Please try again.</div>
+      </div>
+
+    </form>
+
+    <!-- Success state -->
+    <div class="success-state" id="success-state">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="success-title">Receipt stamped. Thanks!</h2>
+      <p class="success-msg">Your feedback helps make the next Kode with Vibes even better. See you at the next one.</p>
+      <div class="barcode">||| || ||| | || ||| ||</div>
+    </div>
+
+    <hr class="dashes" />
+
+    <div class="receipt-footer">
+      <p class="footer-text">Powered by Kodee &nbsp;&bull;&nbsp; kodee.co</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/a/macros/storiesofasia.co/s/AKfycbzz2xJfT13YgmWiJhF_3g8VoXfvyb_zCM_ExXoICCh6ONVMrPaEAC1t0IY0c7t8HpgeTg/exec';
+
+  function setupSingle(groupId, hiddenId) {
+    const btns = document.querySelectorAll('#' + groupId + ' [data-v]');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(hiddenId).value = btn.dataset.v;
+      });
+    });
+  }
+
+  setupSingle('rating', 'rating-val');
+  setupSingle('shipped', 'shipped-val');
+  setupSingle('recommend', 'recommend-val');
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submit-btn');
+    const errMsg = document.getElementById('error-msg');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    errMsg.style.display = 'none';
+
+    const payload = {
+      name:             document.getElementById('name').value.trim(),
+      overall_rating:   document.getElementById('rating-val').value,
+      did_you_ship:     document.getElementById('shipped-val').value,
+      what_you_built:   document.getElementById('built').value.trim(),
+      biggest_surprise: document.getElementById('surprised').value.trim(),
+      would_recommend:  document.getElementById('recommend-val').value,
+      last_thoughts:    document.getElementById('thoughts').value.trim(),
+      submitted_at:     new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' })
+    };
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      document.getElementById('feedback-form').style.display = 'none';
+      const success = document.getElementById('success-state');
+      success.style.display = 'flex';
+
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Submit receipt →';
+      errMsg.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
